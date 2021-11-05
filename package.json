@@ -8,14 +8,20 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "buffer": "^6.0.3",
     "expo": "~43.0.0",
+    "expo-camera": "~12.0.3",
+    "expo-gl": "^11.0.3",
+    "expo-image-picker": "~11.0.3",
+    "expo-permissions": "^13.0.3",
+    "expo-status-bar": "~1.1.0",
+    "gl-react": "^5.0.0",
+    "gl-react-expo": "^5.0.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-native": "0.64.2",
-    "react-native-web": "0.17.1",
-    "expo-camera": "~12.0.3",
-    "expo-status-bar": "~1.1.0",
-    "expo-image-picker": "~11.0.3"
+    "react-native-gl-image-filters": "^0.5.0",
+    "react-native-web": "0.17.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
