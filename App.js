@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Camera } from "expo-camera";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as ImagePicker from 'expo-image-picker';
+import { GLView } from 'expo-gl';
+import { Renderer, TextureLoader, THREE } from 'expo-three';
 
 export default function App() {
   const camera = useRef();
@@ -47,10 +49,8 @@ export default function App() {
   }
   return (
     <View style={styles.container}>
-      <View style={styles.colorBlindMask}>
-        <Text style={{ padding: 20 }}>I'm a mask!!!</Text>
-      </View>
       <Camera style={styles.camera} type={type} ref={camera}>
+        <GLView style={{ width: 300, height: 300 }} onContextCreate={onContextCreate} />
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.button}
@@ -74,6 +74,43 @@ export default function App() {
       </Camera>
     </View>
   );
+}
+
+function onContextCreate(gl) {
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(
+    75,
+    gl.drawingBufferWidth / gl.drawingBufferHeight,
+    0.1,
+    1000
+  );
+
+  const renderer = new Renderer({ gl });
+  renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
+  renderer.setClearColor(0xffffff, 0);
+
+  const geometry = new THREE.BoxGeometry(1, 1, 1);
+  const material = new THREE.MeshBasicMaterial({
+    map: new TextureLoader().load(require('./assets/ar-image.png')),
+  });
+  const cube = new THREE.Mesh(geometry, material);
+  scene.add(cube);
+
+  camera.position.z = 3;
+
+  const animate = () => {
+    this.rafID = requestAnimationFrame(animate);
+
+    cube.rotation.x += 0.02;
+    cube.rotation.y += 0.03;
+    cube.position.x = Math.sin(cube.rotation.x);
+    cube.position.y = Math.cos(cube.rotation.y);
+
+    renderer.render(scene, camera);
+
+    gl.endFrameEXP();
+  };
+  animate();
 }
 
 const styles = StyleSheet.create({
@@ -101,14 +138,18 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: "white",
   },
-  colorBlindMask: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    left: 0,
-    bottom: 50,
-    opacity: 0.2,
-    zIndex: 99,
-    backgroundColor: 'red',
-  }
+  // redMask: {
+  //   position: 'absolute',
+  //   top: 0,
+  //   right: 0,
+  //   left: 0,
+  //   bottom: 50,
+  //   opacity: 0.2,
+  //   zIndex: 99,
+  //   backgroundColor: 'red',
+  // }
 });
+
+{/* <View style={styles.redMask}>
+  <Text style={{ padding: 20 }}>I'm a mask!!!</Text>
+</View> */}
