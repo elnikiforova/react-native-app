@@ -21,6 +21,9 @@ export default function App() {
   }
   return (
     <View style={styles.container}>
+      <View style={styles.colorBlindMask}>
+        <Text style={{ padding: 20 }}>I'm a mask!!!</Text>
+      </View>
       <Camera style={styles.camera} type={type}>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
@@ -43,6 +46,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: 'relative'
   },
   camera: {
     flex: 1,
@@ -62,4 +66,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'white',
   },
+  colorBlindMask: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    left: 0,
+    bottom: 0,
+    opacity: 0.5,
+    zIndex: 99,
+    backgroundColor: 'red',
+  }
 });
