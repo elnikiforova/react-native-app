@@ -191,7 +191,7 @@ function onContextCreateCube(gl) {
 
   const geometry = new THREE.BoxGeometry(1, 1, 1);
   const material = new THREE.MeshBasicMaterial({
-    map: new TextureLoader().load(require("./assets/goethe-logo.jpg")),
+    map: new TextureLoader().load(require('./assets/zeta-logo.png')),
   });
   const cube = new THREE.Mesh(geometry, material);
   scene.add(cube);
