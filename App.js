@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Camera } from "expo-camera";
 import { MaterialIcons } from "@expo/vector-icons";
-import * as ImagePicker from 'expo-image-picker';
-import { GLView } from 'expo-gl';
-import { Renderer, TextureLoader, THREE } from 'expo-three';
+import * as ImagePicker from "expo-image-picker";
+import { GLView } from "expo-gl";
+import { Renderer, TextureLoader, THREE } from "expo-three";
 
 const vertShaderSource = `#version 300 es
  precision highp float;
@@ -21,7 +21,18 @@ const fragShaderSource = `#version 300 es
  in vec2 uv;
  out vec4 fragColor;
  void main() {
-   fragColor = vec4(1.0 - texture(cameraTexture, uv).rgb, 1.0);
+    float r = texture(cameraTexture, uv).r;
+    float g = texture(cameraTexture, uv).g;
+    float b = texture(cameraTexture, uv).b;
+
+    float gr = g + r * 0.5;
+    if(gr > 1.0) gr = 1.0;
+
+    float br = b + r * 0.5;
+    if(br > 1.0) br = 1.0;
+
+
+   fragColor = vec4(r * 0.1, gr, br, 1.0);
  }`;
 
 export default function App() {
@@ -49,16 +60,16 @@ export default function App() {
   /* Take Picture */
   const handleTakePicture = async () => {
     let photo = await camera.current.takePictureAsync();
-    console.log("photo", photo)
-  }
+    console.log("photo", photo);
+  };
 
   /* Pick Image */
   const handlePickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
     });
-    console.log("result >>", result)
-  }
+    console.log("result >>", result);
+  };
 
   const createCameraTexture = () => {
     return glView.current.createCameraTextureAsync(camera.current);
@@ -135,32 +146,27 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Camera style={styles.camera} type={type} ref={camera}>
-        <GLView
-          style={styles.cube}
-          onContextCreate={onContextCreateCube} />
+        <GLView style={styles.cube} onContextCreate={onContextCreateCube} />
         <GLView
           style={styles.camera}
           onContextCreate={onContextCreateTexture}
           ref={glView}
-        ></GLView>
+        />
         <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handlePickImage}
-          >
+          <TouchableOpacity style={styles.button} onPress={handlePickImage}>
             <MaterialIcons name="my-library-add" style={styles.buttonImage} />
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleTakePicture}
-          >
+          <TouchableOpacity style={styles.button} onPress={handleTakePicture}>
             <MaterialIcons name="camera-alt" style={styles.buttonImage} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
             onPress={handlePressFlipCamera}
           >
-            <MaterialIcons name="flip-camera-android" style={styles.buttonImage} />
+            <MaterialIcons
+              name="flip-camera-android"
+              style={styles.buttonImage}
+            />
           </TouchableOpacity>
         </View>
       </Camera>
@@ -185,7 +191,7 @@ function onContextCreateCube(gl) {
 
   const geometry = new THREE.BoxGeometry(1, 1, 1);
   const material = new THREE.MeshBasicMaterial({
-    map: new TextureLoader().load(require('./assets/goethe-logo.jpg')),
+    map: new TextureLoader().load(require("./assets/goethe-logo.jpg")),
   });
   const cube = new THREE.Mesh(geometry, material);
   scene.add(cube);
@@ -210,7 +216,7 @@ function onContextCreateCube(gl) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    position: 'relative'
+    position: "relative",
   },
   camera: {
     // flex: 1,
@@ -219,7 +225,7 @@ const styles = StyleSheet.create({
   cube: {
     width: 300,
     height: 300,
-    zIndex: 99
+    zIndex: 99,
   },
   buttonContainer: {
     flex: 1,
@@ -227,7 +233,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     margin: 20,
-    zIndex: 98
+    zIndex: 98,
   },
   button: {
     flex: 0.1,
@@ -251,6 +257,8 @@ const styles = StyleSheet.create({
   // }
 });
 
-{/* <View style={styles.redMask}>
+{
+  /* <View style={styles.redMask}>
   <Text style={{ padding: 20 }}>I'm a mask!!!</Text>
-</View> */}
+</View> */
+}
