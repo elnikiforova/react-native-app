@@ -6,8 +6,27 @@ import * as ImagePicker from 'expo-image-picker';
 import { GLView } from 'expo-gl';
 import { Renderer, TextureLoader, THREE } from 'expo-three';
 
+const vertShaderSource = `#version 300 es
+ precision highp float;
+ in vec2 position;
+ out vec2 uv;
+ void main() {
+   uv = position;
+   gl_Position = vec4(1.0 - 2.0 * position, 0, 1);
+ }`;
+
+const fragShaderSource = `#version 300 es
+ precision highp float;
+ uniform sampler2D cameraTexture;
+ in vec2 uv;
+ out vec4 fragColor;
+ void main() {
+   fragColor = vec4(1.0 - texture(cameraTexture, uv).rgb, 1.0);
+ }`;
+
 export default function App() {
   const camera = useRef();
+  const glView = useRef();
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
 
@@ -41,6 +60,72 @@ export default function App() {
     console.log("result >>", result)
   }
 
+  const createCameraTexture = () => {
+    return glView.current.createCameraTextureAsync(camera.current);
+  };
+
+  const onContextCreateTexture = async (gl) => {
+    // Create texture asynchronously
+    const texture = await createCameraTexture();
+    const cameraTexture = texture;
+
+    // Compile vertex and fragment shaders
+    const vertShader = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vertShader, vertShaderSource);
+    gl.compileShader(vertShader);
+
+    const fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fragShader, fragShaderSource);
+    gl.compileShader(fragShader);
+
+    // Link, use program, save and enable attributes
+    const program = gl.createProgram();
+    gl.attachShader(program, vertShader);
+    gl.attachShader(program, fragShader);
+    gl.linkProgram(program);
+    gl.validateProgram(program);
+
+    gl.useProgram(program);
+
+    const positionAttrib = gl.getAttribLocation(program, "position");
+    gl.enableVertexAttribArray(positionAttrib);
+
+    // Create, bind, fill buffer
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    const verts = new Float32Array([-2, 0, 0, -2, 2, 2]);
+    gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
+
+    // Bind 'position' attribute
+    gl.vertexAttribPointer(positionAttrib, 2, gl.FLOAT, false, 0, 0);
+
+    // Set 'cameraTexture' uniform
+    gl.uniform1i(gl.getUniformLocation(program, "cameraTexture"), 0);
+
+    // Activate unit 0
+    gl.activeTexture(gl.TEXTURE0);
+
+    // Render loop
+    const loop = () => {
+      requestAnimationFrame(loop);
+
+      // Clear
+      gl.clearColor(0, 0, 1, 1);
+      // tslint:disable-next-line: no-bitwise
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+      // // Bind texture if created
+      gl.bindTexture(gl.TEXTURE_2D, cameraTexture);
+
+      // // Draw!
+      gl.drawArrays(gl.TRIANGLES, 0, verts.length / 2);
+
+      // Submit frame
+      gl.endFrameEXP();
+    };
+    loop();
+  };
+
   if (hasPermission === null) {
     return <View />;
   }
@@ -50,7 +135,14 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Camera style={styles.camera} type={type} ref={camera}>
-        <GLView style={{ width: 300, height: 300 }} onContextCreate={onContextCreate} />
+        <GLView
+          style={{ width: 300, height: 300 }}
+          onContextCreate={onContextCreateCube} />
+        <GLView
+          style={styles.camera}
+          onContextCreate={onContextCreateTexture}
+          ref={glView}
+        ></GLView>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.button}
@@ -76,7 +168,9 @@ export default function App() {
   );
 }
 
-function onContextCreate(gl) {
+function onContextCreateCube(gl) {
+  /// GOETHE CUBE !!!!
+
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(
     75,
@@ -91,7 +185,7 @@ function onContextCreate(gl) {
 
   const geometry = new THREE.BoxGeometry(1, 1, 1);
   const material = new THREE.MeshBasicMaterial({
-    map: new TextureLoader().load(require('./assets/ar-image.png')),
+    map: new TextureLoader().load(require('./assets/goethe-logo.jpg')),
   });
   const cube = new THREE.Mesh(geometry, material);
   scene.add(cube);
