@@ -9,12 +9,17 @@
   },
   "dependencies": {
     "expo": "~43.0.0",
+    "expo-camera": "~12.0.3",
+    "expo-gl": "~11.0.3",
+    "expo-image-picker": "~11.0.3",
+    "expo-status-bar": "~1.1.0",
+    "expo-three": "^6.0.1",
+    "gl-react-expo": "^5.0.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-native": "0.64.2",
     "react-native-web": "0.17.1",
-    "expo-camera": "~12.0.3",
-    "expo-status-bar": "~1.1.0"
+    "three": "^0.134.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
