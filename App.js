@@ -21,7 +21,12 @@ const fragShaderSource = `#version 300 es
  in vec2 uv;
  out vec4 fragColor;
  void main() {
-   fragColor = vec4(1.0 - texture(cameraTexture, uv).rgb, 1.0);
+  float red = texture(cameraTexture, uv).r;
+  float green = texture(cameraTexture, uv).g;
+  float blue = texture(cameraTexture, uv).b;
+
+
+  fragColor = vec4(red * 0.5, green * 1.0, blue * 1.0, 1.0);
  }`;
 
 export default function App() {
@@ -185,7 +190,7 @@ function onContextCreateCube(gl) {
 
   const geometry = new THREE.BoxGeometry(1, 1, 1);
   const material = new THREE.MeshBasicMaterial({
-    map: new TextureLoader().load(require('./assets/goethe-logo.jpg')),
+    map: new TextureLoader().load(require('./assets/zeta-logo.png')),
   });
   const cube = new THREE.Mesh(geometry, material);
   scene.add(cube);
