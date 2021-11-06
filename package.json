@@ -8,6 +8,9 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@react-native-community/slider": "^4.1.7",
+    "@react-navigation/native": "^6.0.6",
+    "@react-navigation/native-stack": "^6.2.5",
     "buffer": "^6.0.3",
     "expo": "~43.0.0",
     "expo-camera": "~12.0.3",
@@ -17,11 +20,17 @@
     "expo-status-bar": "~1.1.0",
     "gl-react": "^5.0.0",
     "gl-react-expo": "^5.0.0",
+    "gl-react-native": "^5.0.0",
+    "native-base": "^3.2.1",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-native": "0.64.2",
     "react-native-gl-image-filters": "^0.5.0",
-    "react-native-web": "0.17.1"
+    "react-native-safe-area-context": "3.3.2",
+    "react-native-screens": "~3.8.0",
+    "react-native-web": "0.17.1",
+    "styled-components": "^5.3.3",
+    "@unimodules/core": "~7.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
