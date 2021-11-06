@@ -136,7 +136,7 @@ export default function App() {
     <View style={styles.container}>
       <Camera style={styles.camera} type={type} ref={camera}>
         <GLView
-          style={{ width: 300, height: 300 }}
+          style={styles.cube}
           onContextCreate={onContextCreateCube} />
         <GLView
           style={styles.camera}
@@ -213,7 +213,13 @@ const styles = StyleSheet.create({
     position: 'relative'
   },
   camera: {
-    flex: 1,
+    // flex: 1,
+    ...StyleSheet.absoluteFillObject,
+  },
+  cube: {
+    width: 300,
+    height: 300,
+    zIndex: 99
   },
   buttonContainer: {
     flex: 1,
@@ -221,6 +227,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     margin: 20,
+    zIndex: 98
   },
   button: {
     flex: 0.1,
